@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react";
+import React, { useLayoutEffect, useState, useEffect } from "react";
 import { TouchableOpacity } from "react-native";
 import { StyleSheet, Text, View, SafeAreaView, ScrollView } from "react-native";
 
@@ -12,9 +12,24 @@ import { Avatar } from "react-native-elements";
 import CustomListItem from "../components/CustomListItem";
 
 // FIREBASE
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 
 const Home = ({ navigation }) => {
+	const [chats, setChats] = useState([]);
+
+	useEffect(() => {
+		const unsub = db.collection("chats").onSnapshot(snapshot => {
+			setChats(
+				snapshot.docs.map(doc => ({
+					id: doc.id,
+					data: doc.data(),
+				})),
+			);
+		});
+
+		return unsub;
+	}, []);
+
 	const signOut = () => {
 		auth.signOut().then(() => {
 			navigation.replace("Login");
@@ -68,7 +83,9 @@ const Home = ({ navigation }) => {
 	return (
 		<SafeAreaView>
 			<ScrollView>
-				<CustomListItem />
+				{chats.map(({ id, data: { chatName } }) => (
+					<CustomListItem key={id} chatName={chatName} id={id} />
+				))}
 			</ScrollView>
 		</SafeAreaView>
 	);
