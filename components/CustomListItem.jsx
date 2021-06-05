@@ -1,15 +1,33 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet } from "react-native";
 
 import { ListItem, Avatar } from "react-native-elements";
+import { db } from "../firebase";
 
 const CustomListItem = ({ id, chatName, enterChat }) => {
+	const [chatmessages, setChatMessages] = useState([]);
+
+	useEffect(() => {
+		const unsub = db
+			.collection("chats")
+			.doc(id)
+			.collection("messages")
+			.orderBy("timestamp", "desc")
+			.onSnapshot(snapshot =>
+				setChatMessages(snapshot.docs.map(doc => doc.data())),
+			);
+
+		return unsub;
+	}, []);
+
 	return (
 		<ListItem key={id} onPress={() => enterChat(id, chatName)}>
 			<Avatar
 				rounded
 				source={{
-					uri: "https://cencup.com/wp-content/uploads/2019/07/avatar-placeholder.png",
+					uri:
+						chatmessages?.[0]?.photoURL ||
+						"https://cencup.com/wp-content/uploads/2019/07/avatar-placeholder.png",
 				}}
 			/>
 			<ListItem.Content>
@@ -17,10 +35,8 @@ const CustomListItem = ({ id, chatName, enterChat }) => {
 					{chatName}
 				</ListItem.Title>
 				<ListItem.Subtitle numberOfLines={1} ellipsizeMode="tail">
-					Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione unde
-					accusantium eligendi illo, facere labore maxime temporibus ipsum sunt
-					accusamus, maiores quidem quasi reprehenderit quis dolor aliquam
-					perferendis, recusandae quam.
+					{chatmessages?.[0]?.displayName}
+					{chatmessages.length > 0 && ":"} {chatmessages?.[0]?.message}
 				</ListItem.Subtitle>
 			</ListItem.Content>
 		</ListItem>

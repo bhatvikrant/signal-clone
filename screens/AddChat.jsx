@@ -42,7 +42,7 @@ const AddChat = ({ navigation }) => {
 				}
 				onSubmitEditing={createChat}
 			/>
-			<Button title="Create new chat" onPress={createChat} />
+			<Button disabled={!input} title="Create new chat" onPress={createChat} />
 		</View>
 	);
 };
