@@ -1,6 +1,7 @@
 import React, { useLayoutEffect, useState, useEffect } from "react";
 import { TouchableOpacity } from "react-native";
-import { StyleSheet, Text, View, SafeAreaView, ScrollView } from "react-native";
+import { StyleSheet, View, SafeAreaView, ScrollView } from "react-native";
+import { StatusBar } from "expo-status-bar";
 
 // ICONS
 import { AntDesign, SimpleLineIcons } from "@expo/vector-icons";
@@ -89,6 +90,7 @@ const Home = ({ navigation }) => {
 
 	return (
 		<SafeAreaView>
+			<StatusBar />
 			<ScrollView style={styles.container}>
 				{chats.map(({ id, data: { chatName } }) => (
 					<CustomListItem
